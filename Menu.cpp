@@ -846,7 +846,7 @@ void CKeySelect::Control()
 
 	if (m_bWaitingOnValue)
 	{
-		for (key_t i = VK_LBUTTON + 1; i < IMenu::GetKeyNames().size(); i++)
+		for (key_t i = VK_LBUTTON; i < IMenu::GetKeyNames().size(); i++)
 		{
 			if (g_Input.KeyDown(i))
 			{
@@ -856,14 +856,7 @@ void CKeySelect::Control()
 				}
 				else
 				{
-					if (i == VK_INSERT)
-					{
-						m_Value = VK_LBUTTON;
-					}
-					else
-					{
-						m_Value = i;
-					}
+					m_Value = i;
 				}
 
 				m_bWaitingOnValue = false;
