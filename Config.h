@@ -6,6 +6,7 @@
 #include <typeinfo>
 #include <string>
 #include <Windows.h>
+#include <cctype>
 
 typedef LONG id_t;
 
