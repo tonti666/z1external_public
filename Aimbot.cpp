@@ -703,13 +703,11 @@ bool CAimbot::GetFinalPoint()
 
 	if (!g_Local.GetActiveWeapon().CanFire())
 	{
-		assert(m_Silent == false);
 		m_bBacktrack = false;
 	}
 
 	if (!(m_bMouseOneDown || g_AimCon.m_pSilentAutoFire->Value()))
 	{
-		assert(m_Silent == false);
 		m_bBacktrack = false;
 	}
 
