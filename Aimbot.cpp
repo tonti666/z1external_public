@@ -900,9 +900,13 @@ bool CAimbot::Move()
 		if (DecimalEnabled(g_AimCon.m_pDelayShotTicks->Value()))
 		{
 			if (m_AimTime.Ticks() < g_AimCon.m_pDelayShotTicks->Value() * g_Engine.GetTickScale() &&
-				iCrosshair != m_pTarget->GetIndex() && !IsSpraying())
+				iCrosshair != m_pTarget->GetIndex() && g_Local.GV<int>(CPlayer::IO::ShotsFired) <= 1)
 			{
 				m_bForceNoInput = true;
+				if (!m_Silent)
+				{
+					m_bBacktrack = false;
+				}
 			}
 		}
 
