@@ -775,12 +775,14 @@ void CAimbot::CurvePoint()
 			{
 				static float A = 0.f;
 				static float B = 0.f;
-				static CPlayer* pLast = nullptr;
+				static const CPlayer* pLast = nullptr;
 
 				static float a = 0.f, b = 0.f, c = 0.f;
 
 				if (m_pTarget != pLast)
 				{
+					m_pLast = m_pTarget;
+					
 					const float flMax = (m_FinalVisiblePoint.y - m_Screen.y);
 					const float flScale = std::clamp((m_FinalVisiblePoint.x - m_Screen.x), 0.f, 1.f);
 
