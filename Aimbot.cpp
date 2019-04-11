@@ -759,19 +759,63 @@ void CAimbot::CurvePoint()
 
 	const auto GetCurve = [this]() -> float
 	{
-		static float counter = 0.f;
-		counter += 1.f;
-
 		switch (g_AimCon.m_pCurveMode->Value())
 		{
 		case CURVE_TRIGONMETRIC:
+		{
+			static float counter = 0.f;
+			counter += 1.f;
 			return cosf(g_Math.DegreesToRadians(counter));
+		}
 
 		case CURVE_AIMTIME_PROPORTIONAL:
-			return -std::clamp(0.1f * expf(Squared(m_AimTime.Elapsed())) - sinf(m_AimTime.Elapsed() - g_Math.PI_INV_2) - 1, 0.f, 1.f);
-		
 		case CURVE_AIMTIME_INVERSE:
-			return std::clamp(0.1f * expf(-Squared(m_AimTime.Elapsed())), 0.f, 1.f);
+		{
+			const auto f = [&]() -> float
+			{
+				static float A = 0.f;
+				static float B = 0.f;
+				static CPlayer* pLast = nullptr;
+
+				static float a = 0.f, b = 0.f, c = 0.f;
+
+				if (m_pTarget != pLast)
+				{
+					const float flMax = (m_FinalVisiblePoint.y - m_Screen.y);
+					const float flScale = std::clamp((m_FinalVisiblePoint.x - m_Screen.x), 0.f, 1.f);
+
+					A = g_Math.RandomNumber<float>((m_FinalVisiblePoint.x - m_Screen.x) * g_AimCon.m_pCurve->Value(), g_AimCon.m_pCurveDeviation->Value());
+					B = g_Math.RandomNumber<float>((m_FinalVisiblePoint.x - m_Screen.x) * g_AimCon.m_pCurve->Value(), g_AimCon.m_pCurveDeviation->Value());
+
+					A *= flScale;
+					B *= flScale;
+
+					if (g_AimCon.m_pCurveMode->Value() == CURVE_AIMTIME_PROPORTIONAL)
+					{
+						if (A > B)
+						{
+							std::swap(A, B);
+						}
+					}
+					else
+					{
+						if (B > A)
+						{
+							std::swap(A, B);
+						}
+					}
+
+					c = (m_FinalVisiblePoint.x + (73.f / 2.f) * m_Screen.x + (3.f / 2.f) * B - 30.f * A) / (-11.f * flMax);
+					b = (-9 * (B - 8.f * A + 7.f * m_FinalVisiblePoint.x + 2.f * c * flMax)) / (4 * flMax * flMax);
+					a = (27.f * (A - m_Screen.x - (1.f / 3.f) * c * flMax - (1.f / 9.f) * b * flMax * flMax)) / (flMax * flMax * flMax);
+				}
+
+				const float x = (m_FinalVisiblePoint.y - m_Screen.y);
+				return a * x*x*x + b * x*x + c * x - m_Screen.x;
+			};
+
+			return f();
+		}
 
 		default:
 			return 0.f;
