@@ -496,15 +496,17 @@ class CWindow : public CBaseControlable, public CBaseChildSaveable
 {
 private:
 	POINT m_LastCursor;
+	POINT m_LastCursor_Resize;
 
 	std::vector<CManagedMenuItem<CTab>> m_Tabs;
 	size_t m_CurrentTab;
-	bool m_bVisible, m_bIsDragging;
+	bool m_bVisible, m_bIsDragging, m_bIsResizing;
 
 	bool SetCurrentTab();
 	size_t GetVisibleTabCount() const;
 
 	bool DragWindow();
+	bool ResizeWindow();
 
 public:
 	CWindow(const RECT& Bounds, const char* RenderText, const CCondition& Condition = NO_CONDITION);
@@ -587,17 +589,19 @@ class IMenu : public CBaseControlable, public CBaseParentSaveable
 {
 private:
 	POINT m_LastCursor;
+	POINT m_LastCursor_Resize;
 
 	std::vector<CManagedMenuItem<CWindow>> m_Windows;
 	std::vector<CManagedMenuItem<CButton>> m_Buttons;
 	std::vector<DebugMessage_t> m_szDebugMessages;
 
-	bool m_bVisible, m_bIsDragging;
+	bool m_bVisible, m_bIsDragging, m_bIsResizing;
 
 	bool m_bMouse1Pressed, m_bMouse1Down;
 	POINT m_CursorPosition;
 
 	bool DragMenu();
+	bool ResizeMenu();
 
 public:
 	IMenu(const RECT& Bounds, const char* RenderText, const CCondition& Condition = NO_CONDITION);

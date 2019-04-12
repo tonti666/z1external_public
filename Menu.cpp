@@ -116,6 +116,28 @@ bool CWindow::DragWindow()
 	return m_bIsDragging;
 }
 
+bool CWindow::ResizeWindow()
+{
+	if (!m_bIsResizing)
+	{
+		m_LastCursor_Resize = g_Menu.GetCursorPosition();
+	}
+
+	const RECT Bounds = { m_RenderBounds.right - TERANY(m_bIsResizing, 100, FONT_HEIGHT * 2), m_RenderBounds.bottom - TERANY(m_bIsResizing, 100, FONT_HEIGHT * 2),
+		m_RenderBounds.right + TERANY(m_bIsResizing, 100, 0), m_RenderBounds.bottom + TERANY(m_bIsResizing, 100, 0) };
+	m_bIsResizing = g_Menu.CursorInBounds(Bounds) && g_Menu.Mouse1Down();
+
+	if (m_bIsResizing)
+	{
+		const POINT Delta = { g_Menu.GetCursorPosition().x - m_LastCursor_Resize.x, g_Menu.GetCursorPosition().y - m_LastCursor_Resize.y };
+		m_RenderBounds.right += Delta.x;
+		m_RenderBounds.bottom += Delta.y; 
+	}
+
+	m_LastCursor_Resize = g_Menu.GetCursorPosition();
+	return m_bIsResizing;
+}
+
 CWindow::CWindow(const RECT & Bounds, const char * RenderText, const CCondition & Condition)
 	: CBaseControlable(Bounds, RenderText, Condition), m_bVisible(false), m_bIsDragging(false), m_CurrentTab(0)
 {
@@ -182,10 +204,17 @@ void CWindow::Control()
 	if (!IsVisible())
 	{
 		m_bIsDragging = false;
+		m_bIsResizing = false;
 		return;
 	}
 
 	if (DragWindow())
+	{
+		m_bIsResizing = false;
+		return;
+	}
+
+	if (ResizeWindow())
 	{
 		return;
 	}
@@ -1285,6 +1314,28 @@ bool IMenu::DragMenu()
 	return m_bIsDragging;
 }
 
+bool IMenu::ResizeMenu()
+{
+	if (!m_bIsResizing)
+	{
+		m_LastCursor_Resize = g_Menu.GetCursorPosition();
+	}
+
+	const RECT Bounds = { m_RenderBounds.right - TERANY(m_bIsResizing, 100, FONT_HEIGHT * 2), m_RenderBounds.bottom - TERANY(m_bIsResizing, 100, FONT_HEIGHT * 2),
+		m_RenderBounds.right + TERANY(m_bIsResizing, 100, 0), m_RenderBounds.bottom + TERANY(m_bIsResizing, 100, 0) };
+	m_bIsResizing = g_Menu.CursorInBounds(Bounds) && g_Menu.Mouse1Down();
+
+	if (m_bIsResizing)
+	{
+		const POINT Delta = { g_Menu.GetCursorPosition().x - m_LastCursor_Resize.x, g_Menu.GetCursorPosition().y - m_LastCursor_Resize.y };
+		m_RenderBounds.right += Delta.x;
+		m_RenderBounds.bottom += Delta.y;
+	}
+
+	m_LastCursor_Resize = g_Menu.GetCursorPosition();
+	return m_bIsResizing;
+}
+
 IMenu::IMenu(const RECT & Bounds, const char * RenderText, const CCondition & Condition)
 	: CBaseControlable(Bounds, RenderText, Condition), m_bVisible(false), m_bIsDragging(false)
 {
@@ -1422,6 +1473,7 @@ void IMenu::Control()
 	if (!IsVisible())
 	{
 		m_bIsDragging = false;
+		m_bIsResizing = false;
 		End();
 		return;
 	}
@@ -1429,6 +1481,13 @@ void IMenu::Control()
 	GetCursorPos(&m_CursorPosition);
 
 	if (DragMenu())
+	{
+		m_bIsResizing = false;
+		End();
+		return;
+	}
+
+	if (ResizeMenu())
 	{
 		End();
 		return;

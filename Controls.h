@@ -199,6 +199,7 @@ public:
 		CSlider<float>* m_pFOV;
 		CUniSelect* m_pMoveMode;
 		CCheckbox* m_pClampFOV;
+		CCheckbox* m_pTargetConservation;
 
 		CSlider<int>* m_pVisibleAfterShots;
 		CSlider<int>* m_pSilentBeforeShots;

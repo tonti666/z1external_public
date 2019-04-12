@@ -331,7 +331,22 @@ bool CAimbot::PassesFireConditions()
 
 bool CAimbot::GetFinalTarget()
 {
-	m_pTarget = nullptr;
+	if (g_AimCon.m_pTargetConservation->Value())
+	{
+		if (GetFinalPoint())
+		{
+			return true;
+		}
+		else
+		{
+			m_pTarget = nullptr;
+		}
+	}
+	else
+	{
+		m_pTarget = nullptr;
+	}
+
 	float flBestFOV = 39.f;
 
 	if (g_Local.GV<int>(CPlayer::IO::ShotsFired) > g_AimCon.m_pRecoilCompensateShots->Value() && 
@@ -771,52 +786,49 @@ void CAimbot::CurvePoint()
 		case CURVE_AIMTIME_PROPORTIONAL:
 		case CURVE_AIMTIME_INVERSE:
 		{
-			const auto f = [&]() -> float
+			static float A = 0.f;
+			static float B = 0.f;
+			static const CPlayer* pLast = nullptr;
+
+			static float a = 0.f, b = 0.f, c = 0.f;
+			static CVector2D InitialScreen = CVector2D();
+
+			if (m_pTarget != pLast)
 			{
-				static float A = 0.f;
-				static float B = 0.f;
-				static const CPlayer* pLast = nullptr;
+				pLast = m_pTarget;
 
-				static float a = 0.f, b = 0.f, c = 0.f;
+				InitialScreen = m_Screen;
+				const float flMax = (m_FinalVisiblePoint.y - InitialScreen.y);
+				const float flScale = std::clamp((m_FinalVisiblePoint.x - InitialScreen.x), 0.f, 1.f);
 
-				if (m_pTarget != pLast)
+				A = g_Math.RandomNumber<float>((m_FinalVisiblePoint.x - InitialScreen.x) * g_AimCon.m_pCurve->Value(), g_AimCon.m_pCurveDeviation->Value());
+				B = g_Math.RandomNumber<float>((m_FinalVisiblePoint.x - InitialScreen.x) * g_AimCon.m_pCurve->Value(), g_AimCon.m_pCurveDeviation->Value());
+
+				A *= flScale;
+				B *= flScale;
+
+				if (g_AimCon.m_pCurveMode->Value() == CURVE_AIMTIME_PROPORTIONAL)
 				{
-					m_pLast = m_pTarget;
-					
-					const float flMax = (m_FinalVisiblePoint.y - m_Screen.y);
-					const float flScale = std::clamp((m_FinalVisiblePoint.x - m_Screen.x), 0.f, 1.f);
-
-					A = g_Math.RandomNumber<float>((m_FinalVisiblePoint.x - m_Screen.x) * g_AimCon.m_pCurve->Value(), g_AimCon.m_pCurveDeviation->Value());
-					B = g_Math.RandomNumber<float>((m_FinalVisiblePoint.x - m_Screen.x) * g_AimCon.m_pCurve->Value(), g_AimCon.m_pCurveDeviation->Value());
-
-					A *= flScale;
-					B *= flScale;
-
-					if (g_AimCon.m_pCurveMode->Value() == CURVE_AIMTIME_PROPORTIONAL)
+					if (A > B)
 					{
-						if (A > B)
-						{
-							std::swap(A, B);
-						}
+						std::swap(A, B);
 					}
-					else
+				}
+				else
+				{
+					if (B > A)
 					{
-						if (B > A)
-						{
-							std::swap(A, B);
-						}
+						std::swap(A, B);
 					}
-
-					c = (m_FinalVisiblePoint.x + (73.f / 2.f) * m_Screen.x + (3.f / 2.f) * B - 30.f * A) / (-11.f * flMax);
-					b = (-9 * (B - 8.f * A + 7.f * m_FinalVisiblePoint.x + 2.f * c * flMax)) / (4 * flMax * flMax);
-					a = (27.f * (A - m_Screen.x - (1.f / 3.f) * c * flMax - (1.f / 9.f) * b * flMax * flMax)) / (flMax * flMax * flMax);
 				}
 
-				const float x = (m_FinalVisiblePoint.y - m_Screen.y);
-				return a * x*x*x + b * x*x + c * x - m_Screen.x;
-			};
+				c = (m_FinalVisiblePoint.x + (73.f / 2.f) * InitialScreen.x + (3.f / 2.f) * B - 30.f * A) / (-11.f * flMax);
+				b = (-9 * (B - 8.f * A + 7.f * m_FinalVisiblePoint.x + 2.f * c * flMax)) / (4 * flMax * flMax);
+				a = (27.f * (A - InitialScreen.x - (1.f / 3.f) * c * flMax - (1.f / 9.f) * b * flMax * flMax)) / (flMax * flMax * flMax);
+			}
 
-			return f();
+			const float x = (m_FinalVisiblePoint.y - InitialScreen.y);
+			return a * x * x * x + b * x * x + c * x - InitialScreen.x;
 		}
 
 		default:

@@ -62,6 +62,7 @@ void IControls::RegisterControls()
 	m_Aimbot.m_pActivationRate = new CSlider<percentage_t>(L_DEF_PARAMS, "aim_rate", { 1.f, "always" }, { 0.f, "never" }, M_C(&, m_Aimbot.m_pEnabled->Value()));
 	m_Aimbot.m_pFOV = new CSlider<float>(L_DEF_PARAMS, "aim_fov", { 39.f, "" }, { 0.f, "" }, M_C(&, m_Aimbot.m_pEnabled->Value()));
 	m_Aimbot.m_pClampFOV = new CCheckbox(S_DEF_PARAMS, "aim_clamp_fov", M_C(&, m_Aimbot.m_pEnabled->Value()));
+	m_Aimbot.m_pTargetConservation = new CCheckbox(S_DEF_PARAMS, "aim_target_conservation", M_C(&, m_Aimbot.m_pEnabled->Value()));
 	m_Aimbot.m_pMoveMode = new CUniSelect(L_DEF_PARAMS, "aim_move_mode", { "set", "pull" }, M_C(&, m_Aimbot.m_pEnabled->Value()));
 	m_Aimbot.m_pPullingAwayThreshold = new CSlider<float>(L_DEF_PARAMS, "aim_pulling_fov", { 0.5f, "" }, { 0.f, "disabled" }, M_C(&, m_Aimbot.m_pEnabled->Value()));
 	m_Aimbot.m_pPullingAwayCoolDownTIcks = new CSlider<float>(L_DEF_PARAMS, "aim_pulling_disable_ticks", { 64.f, "" }, { 0.f, "disabled" }, M_C(&, m_Aimbot.m_pEnabled->Value()));
@@ -72,6 +73,7 @@ void IControls::RegisterControls()
 	m_Aimbot.m_pConditionsPart1->AddElement(m_Aimbot.m_pActivationRate);
 	m_Aimbot.m_pConditionsPart1->AddElement(m_Aimbot.m_pFOV);
 	m_Aimbot.m_pConditionsPart1->AddElement(m_Aimbot.m_pClampFOV);
+	m_Aimbot.m_pConditionsPart1->AddElement(m_Aimbot.m_pTargetConservation);
 	m_Aimbot.m_pConditionsPart1->AddElement(m_Aimbot.m_pMoveMode);
 	m_Aimbot.m_pConditionsPart1->AddElement(m_Aimbot.m_pPullingAwayThreshold);
 	m_Aimbot.m_pConditionsPart1->AddElement(m_Aimbot.m_pPullingAwayCoolDownTIcks);
