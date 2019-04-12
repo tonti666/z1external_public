@@ -331,24 +331,6 @@ bool CAimbot::PassesFireConditions()
 
 bool CAimbot::GetFinalTarget()
 {
-	if (g_AimCon.m_pTargetConservation->Value())
-	{
-		if (GetFinalPoint())
-		{
-			return true;
-		}
-		else
-		{
-			m_pTarget = nullptr;
-		}
-	}
-	else
-	{
-		m_pTarget = nullptr;
-	}
-
-	float flBestFOV = 39.f;
-
 	if (g_Local.GV<int>(CPlayer::IO::ShotsFired) > g_AimCon.m_pRecoilCompensateShots->Value() && 
 		(g_Local.GetActiveWeapon().IsRifle() || g_Local.GetActiveWeapon().IsSMG()))
 	{
@@ -380,6 +362,24 @@ bool CAimbot::GetFinalTarget()
 	{
 		m_CompensatedPunch = CVector2D();
 	}
+
+	if (g_AimCon.m_pTargetConservation->Value() && m_pTarget && PassesIntermediateConditions(*m_pTarget))
+	{
+		if (GetFinalPoint())
+		{
+			return true;
+		}
+		else
+		{
+			m_pTarget = nullptr;
+		}
+	}
+	else
+	{
+		m_pTarget = nullptr;
+	}
+
+	float flBestFOV = 39.f;
 
 	for (size_t i = g_PlayerList.Start; i < g_PlayerList.MaxPlayerCount; i++)
 	{
@@ -786,6 +786,12 @@ void CAimbot::CurvePoint()
 		case CURVE_AIMTIME_PROPORTIONAL:
 		case CURVE_AIMTIME_INVERSE:
 		{
+			static float counter = 0.f;
+			counter += 1.f;
+			return cosf(g_Math.DegreesToRadians(counter));
+
+			//sometimes works really well. other times not so much :(
+			/*
 			static float A = 0.f;
 			static float B = 0.f;
 			static const CPlayer* pLast = nullptr;
@@ -829,6 +835,7 @@ void CAimbot::CurvePoint()
 
 			const float x = (m_FinalVisiblePoint.y - InitialScreen.y);
 			return a * x * x * x + b * x * x + c * x - InitialScreen.x;
+			*/
 		}
 
 		default:

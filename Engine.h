@@ -76,7 +76,7 @@ class IPlayerList : public CBaseUtility
 {
 public:
 	static constexpr size_t Start = 0;
-	static constexpr size_t MaxPlayerCount = 65;
+	static constexpr size_t MaxPlayerCount = 64;
 
 	class IO : public CBaseNonInstantiable
 	{

@@ -595,13 +595,12 @@ private:
 	std::vector<CManagedMenuItem<CButton>> m_Buttons;
 	std::vector<DebugMessage_t> m_szDebugMessages;
 
-	bool m_bVisible, m_bIsDragging, m_bIsResizing;
+	bool m_bVisible, m_bIsDragging;
 
 	bool m_bMouse1Pressed, m_bMouse1Down;
 	POINT m_CursorPosition;
 
 	bool DragMenu();
-	bool ResizeMenu();
 
 public:
 	IMenu(const RECT& Bounds, const char* RenderText, const CCondition& Condition = NO_CONDITION);

@@ -929,7 +929,7 @@ void CESP::EntryPoint()
 			{
 				Player.SV<CColor>(CPlayer::IO::CLRRender, CColor(255, 255, 255, 255));
 			}
-			else if (g_ESPCon.m_pTargets->Value()[ESP_OPTION_RADAR].m_bSelected &&
+			else if (g_ESPCon.m_pOptions->Value()[ESP_OPTION_RADAR].m_bSelected &&
 				!Player.GV<bool>(CPlayer::IO::Spotted) && Player.IsEnemy())
 			{
 				Player.SV<bool>(CPlayer::IO::Spotted, true);

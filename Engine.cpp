@@ -180,7 +180,7 @@ void IRender::FormatName(const char * pName, char * Buffer, int MaxLength)
 
 	for (size_t i = 0; i < Length; i++)
 	{
-		if (!isalpha(Buffer[i]) && !isdigit(Buffer[i]))
+		if (Buffer[i] < 0 || (!isalpha(Buffer[i]) && !isdigit(Buffer[i])))
 		{
 			Buffer[i] = ' ';
 		}

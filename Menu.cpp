@@ -123,7 +123,7 @@ bool CWindow::ResizeWindow()
 		m_LastCursor_Resize = g_Menu.GetCursorPosition();
 	}
 
-	const RECT Bounds = { m_RenderBounds.right - 1 - TERANY(m_bIsResizing, 100, LONG_WIDTH), m_RenderBounds.bottom - 1 - TERANY(m_bIsResizing, 100, OBJECT_HEIGHT),
+	const RECT Bounds = { m_RenderBounds.right - 1 - TERANY(m_bIsResizing, 100, SHORT_WIDTH), m_RenderBounds.bottom - 1 - TERANY(m_bIsResizing, 100, OBJECT_HEIGHT),
 		m_RenderBounds.right + TERANY(m_bIsResizing, 100, 0), m_RenderBounds.bottom + TERANY(m_bIsResizing, 100, 0) };
 	m_bIsResizing = g_Menu.CursorInBounds(Bounds) && g_Menu.Mouse1Down();
 
@@ -170,7 +170,7 @@ void CWindow::Print()
 	Current.top += FONT_HEIGHT + 1;
 	g_Render.Line(Current.left, Current.top, Current.right, Current.top, 1, IMenu::GetTextColor());
 	Current.top += 1;
-	g_Render.BorderedBox(Current.right - 1 - LONG_WIDTH, Current.bottom - 1 - OBJECT_HEIGHT, LONG_WIDTH, OBJECT_HEIGHT, 1, TERANY(m_bIsResizing, IMenu::GetSelectBrush(), IMenu::GetOutlineBrush()));
+	g_Render.BorderedBox(Current.right - 1 - SHORT_WIDTH, Current.bottom - 1 - OBJECT_HEIGHT, SHORT_WIDTH, OBJECT_HEIGHT, 1, TERANY(m_bIsResizing, IMenu::GetSelectBrush(), IMenu::GetOutlineBrush()));
 
 	const auto VisibleCount = GetVisibleTabCount();
 	if (!VisibleCount)
@@ -1315,28 +1315,6 @@ bool IMenu::DragMenu()
 	return m_bIsDragging;
 }
 
-bool IMenu::ResizeMenu()
-{
-	if (!m_bIsResizing)
-	{
-		m_LastCursor_Resize = g_Menu.GetCursorPosition();
-	}
-
-	const RECT Bounds = { m_RenderBounds.right - 1 - TERANY(m_bIsResizing, 100, LONG_WIDTH), m_RenderBounds.bottom - 1 - TERANY(m_bIsResizing, 100, OBJECT_HEIGHT),
-		m_RenderBounds.right + TERANY(m_bIsResizing, 100, 0), m_RenderBounds.bottom + TERANY(m_bIsResizing, 100, 0) };
-	m_bIsResizing = g_Menu.CursorInBounds(Bounds) && g_Menu.Mouse1Down();
-
-	if (m_bIsResizing)
-	{
-		const POINT Delta = { g_Menu.GetCursorPosition().x - m_LastCursor_Resize.x, g_Menu.GetCursorPosition().y - m_LastCursor_Resize.y };
-		m_RenderBounds.right += Delta.x;
-		m_RenderBounds.bottom += Delta.y;
-	}
-
-	m_LastCursor_Resize = g_Menu.GetCursorPosition();
-	return m_bIsResizing;
-}
-
 IMenu::IMenu(const RECT & Bounds, const char * RenderText, const CCondition & Condition)
 	: CBaseControlable(Bounds, RenderText, Condition), m_bVisible(false), m_bIsDragging(false)
 {
@@ -1434,7 +1412,7 @@ void IMenu::Print()
 	Current.top += FONT_HEIGHT + 1;
 	g_Render.Line(Current.left, Current.top, Current.right, Current.top, 1, IMenu::GetTextColor());
 	Current.top += 1 + OBJECT_GAP;
-	g_Render.BorderedBox(Current.right - 1 - LONG_WIDTH, Current.bottom - 1 - OBJECT_HEIGHT, LONG_WIDTH, OBJECT_HEIGHT, 1, TERANY(m_bIsResizing, IMenu::GetSelectBrush(), IMenu::GetOutlineBrush()));
+
 	for (auto& i : m_Buttons)
 	{
 		if (!i()->IsVisible())
@@ -1474,7 +1452,6 @@ void IMenu::Control()
 	if (!IsVisible())
 	{
 		m_bIsDragging = false;
-		m_bIsResizing = false;
 		End();
 		return;
 	}
@@ -1482,13 +1459,6 @@ void IMenu::Control()
 	GetCursorPos(&m_CursorPosition);
 
 	if (DragMenu())
-	{
-		m_bIsResizing = false;
-		End();
-		return;
-	}
-
-	if (ResizeMenu())
 	{
 		End();
 		return;

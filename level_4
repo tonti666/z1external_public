@@ -2,8 +2,9 @@ aim_enabled: 1
 aim_key: 1
 aim_key_toggle: 0
 aim_rate: 1.000000
-aim_fov: 4.875000
+aim_fov: 4.387500
 aim_clamp_fov: 1
+aim_target_conservation: 0
 aim_move_mode: 0
 aim_pulling_fov: 0.000000
 aim_pulling_disable_ticks: 0.000000
@@ -38,8 +39,8 @@ aim_silent_auto_fire: 1
 aim_visible_auto_fire: 1
 aim_smooth_mode: 0
 aim_priority_bone: 8
-aim_priority_value: 0.400000
-aim_priority_spraying_value: 0.350000
+aim_priority_value: 0.350000
+aim_priority_spraying_value: 0.400000
 aim_bone_list_0: 0
 aim_bone_list_1: 8
 aim_bone_list_2: 10
@@ -70,7 +71,7 @@ forwardtrack_silent_aim: 0
 forwardtrack_visible_aim: 0
 aim_silent_always: 0
 aim_silent_delay_post: 0
-aim_silent_fov: 5.000000
+aim_silent_fov: 3.000000
 standalone_enabled: 1
 standalone_while_aiming: 0
 standalone_aim_wait_ticks: 0.000000
@@ -95,7 +96,7 @@ magnet_disable_conditions_jumping: 0
 magnet_silent_visible_ticks: 0.000000
 magnet_visible_visible_ticks: 0.000000
 magnet_retarget_ticks: 0.000000
-magnet_burst_ticks: 0.000000
+magnet_burst_ticks: 6.000000
 magnet_smooth_mode: 0
 magnet_curve_mode: 1
 magnet_silent_auto_fire: 0
@@ -108,8 +109,10 @@ magnet_silent: 0
 magnet_silent_at_backtrack: 0
 magnet_silent_at_forwardtrack: 1
 magnet_priority_bone: 8
-magnet_priority_value: 0.200000
-magnet_bone_list_0: 8
+magnet_priority_value: 0.450000
+magnet_bone_list_0: 0
+magnet_bone_list_1: 8
+magnet_bone_list_2: 10
 magnet_rcs: 1
 magnet_compensate_after_shots: 2
 magnet_local_predict_ticks: 1.250000
@@ -185,6 +188,7 @@ esp_info_options_armor: 0
 esp_info_options_defusing: 1
 esp_info_options_defuser: 0
 esp_info_options_rank: 0
+backtrack_style: 1
 glow_style: 0
 glow_bloom: 0
 glow_alpha: 1.000000
@@ -249,7 +253,7 @@ bunny_hop_key_toggle: 0
 bunny_hop_rate: 1.000000
 bunny_hop_assist_ticks: 0.000000
 bunny_hop_cooldown_ticks: 0.000000
-bunny_hop_min_velocity: 0.000000
+bunny_hop_min_velocity: 25.500000
 bunny_hop_auto_strafe: 0
 fake_lag_mode: 0
 fake_lag_key: 0
