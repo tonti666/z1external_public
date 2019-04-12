@@ -376,7 +376,7 @@ void CESP::DrawEssentials()
 void CESP::DrawNonEssentials()
 {
 	const auto& records = g_Backtrack.GetRecords(m_Current->m_Player.GetIndex());
-	const auto& futureue = g_Backtrack.GetFutureRecords(m_Current->m_Player.GetIndex());
+	const auto& future_records = g_Backtrack.GetFutureRecords(m_Current->m_Player.GetIndex());
 	
 	if (g_AimCon.m_pBackTrack->Value() &&
 		g_ESPCon.m_pOptions->Value()[ESP_OPTION_BACKTRACK_SKELETONS].m_bSelected)
@@ -385,6 +385,7 @@ void CESP::DrawNonEssentials()
 		float flBestFOV = 180.f;
 		CVector Angles;
 		size_t BestRecord = UINT_MAX;
+		bool IsForwardTrack = false;
 
 		for (size_t i = 0; i < records.size(); i++)
 		{
@@ -401,9 +402,9 @@ void CESP::DrawNonEssentials()
 
 		if (g_AimCon.m_pForwardTrack->Value())
 		{
-			for (size_t i = 0; i < futureue.size(); i++)
+			for (size_t i = 0; i < future_records.size(); i++)
 			{
-				g_Math.VectorAngles(futureue[i].GetBonePosition(BONE_HEAD) - Source, Angles);
+				g_Math.VectorAngles(future_records[i].GetBonePosition(BONE_HEAD) - Source, Angles);
 				g_Math.ClampAngle(Angles);
 
 				const float flFOV = g_Math.GetFOV(g_Engine.GetScreenAngles(), Angles);
@@ -411,20 +412,35 @@ void CESP::DrawNonEssentials()
 				{
 					flBestFOV = flFOV;
 					BestRecord = i;
+					IsForwardTrack = true;
 				}
 			}
 		}
-
-		for (size_t i = 0; i < records.size(); i++)
+		
+		if (g_ESPCon.m_pBackTrackStyle->Value() == BACKTRACK_DRAW_ALL)
 		{
-			DrawSkeleton(records[i].m_BoneMatrices(), TERANY(i == BestRecord, IMenu::GetSelectColor(), IMenu::GetTextColor()));
-		}
-
-		if (g_AimCon.m_pForwardTrack->Value())
-		{
-			for (size_t i = 0; i < futureue.size(); i++)
+			for (size_t i = 0; i < records.size(); i++)
 			{
-				DrawSkeleton(futureue[i].m_BoneMatrices(), TERANY(i == BestRecord, IMenu::GetSelectColor(), IMenu::GetTextColor()));
+				DrawSkeleton(records[i].m_BoneMatrices(), TERANY(i == BestRecord, IMenu::GetSelectColor(), IMenu::GetTextColor()));
+			}
+
+			if (g_AimCon.m_pForwardTrack->Value())
+			{
+				for (size_t i = 0; i < future_records.size(); i++)
+				{
+					DrawSkeleton(future_records[i].m_BoneMatrices(), TERANY(i == BestRecord, IMenu::GetSelectColor(), IMenu::GetTextColor()));
+				}
+			}
+		}
+		else
+		{
+			if (IsForwardTrack)
+			{
+				DrawSkeleton(future_records[BestRecord].m_BoneMatrices(), IMenu::GetSelectColor());
+			}
+			else
+			{
+				DrawSkeleton(records[BestRecord].m_BoneMatrices(), IMenu::GetSelectColor());
 			}
 		}
 	}
@@ -444,6 +460,7 @@ void CESP::DrawNonEssentials()
 
 			CVector Last = records[0].GetBonePosition(BONE_HEAD);
 			CVector2D LastScreen, CurScreen;
+			const bool bCrosshairAll = g_ESPCon.m_pBackTrackStyle->Value() == BACKTRACK_DRAW_ALL;
 			for (size_t i = 1; i < records.size(); i++)
 			{
 				const CVector Point(records[i].GetBonePosition(BONE_HEAD));
@@ -452,6 +469,11 @@ void CESP::DrawNonEssentials()
 				{
 					g_Render.Line(LastScreen.x, LastScreen.y, CurScreen.x, CurScreen.y, 1,
 						TERANY(g_Backtrack.RecordValid(records[i]), m_Current->m_Color, CColor::Blue));
+
+					if (bCrosshairAll)
+					{
+						DrawCrosshair(CurScreen.x, CurScreen.y, 2, 1, CrosshairMode_t::Regular, IMenu::GetTextColor());
+					}
 				}
 
 				Last = Point;
@@ -470,17 +492,22 @@ void CESP::DrawNonEssentials()
 				}
 			}
 
-			if (g_AimCon.m_pForwardTrack->Value() && futureue.size() > 1)
+			if (g_AimCon.m_pForwardTrack->Value() && future_records.size() > 1)
 			{
-				Last = futureue[0].GetBonePosition(BONE_HEAD);
-				for (size_t i = 1; i < futureue.size(); i++)
+				Last = future_records[0].GetBonePosition(BONE_HEAD);
+				for (size_t i = 1; i < future_records.size(); i++)
 				{
-					const CVector Point(futureue[i].GetBonePosition(BONE_HEAD));
+					const CVector Point(future_records[i].GetBonePosition(BONE_HEAD));
 					const bool bVisible = g_Render.WorldToScreen(Point, CurScreen) && g_Render.WorldToScreen(Last, LastScreen);
 					if (bVisible)
 					{
 						g_Render.Line(LastScreen.x, LastScreen.y, CurScreen.x, CurScreen.y, 1,
-							TERANY(g_Backtrack.RecordValid(futureue[i]), m_Current->m_Color, CColor::Blue));
+							TERANY(g_Backtrack.RecordValid(future_records[i]), m_Current->m_Color, CColor::Blue));
+
+						if (bCrosshairAll)
+						{
+							DrawCrosshair(CurScreen.x, CurScreen.y, 2, 1, CrosshairMode_t::Regular, IMenu::GetTextColor());
+						}
 					}
 
 					Last = Point;

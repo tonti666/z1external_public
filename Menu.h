@@ -748,6 +748,22 @@ inline void CNumericalInput<T>::Control()
 			}
 		}
 
+		if constexpr (!std::is_unsigned<T>::value)
+		{
+			if (g_Input.KeyPressed(VK_OEM_MINUS) && buf.size() == 0)
+			{
+				buf.push_back('-');
+			}
+		}
+
+		if constexpr (std::is_floating_point<T>::value)
+		{
+			if (g_Input.KeyPressed(VK_OEM_COMMA))
+			{
+				buf.append('.');
+			}
+		}
+
 		if (g_Input.KeyPressed(VK_BACK) && buf.size())
 		{
 			buf.pop_back();

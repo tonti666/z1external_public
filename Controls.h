@@ -130,6 +130,12 @@ enum EESPInfoOptions
 	ESP_INFO_RANK
 };
 
+enum ESkeletonDrawOptions
+{
+	BACKTRACK_DRAW_ALL,
+	BACKTRACK_DRAW_BEST
+};
+
 enum ESpectatorListMode
 {
 	SPEC_LIST_MODE_ALL,
@@ -406,6 +412,7 @@ public:
 
 		CMultiSelectToggleList* m_pOptions;
 		CMultiSelectToggleList* m_pInfoOptions;
+		CCycle* m_pBackTrackStyle;
 
 		CSubSection* m_pMis;
 		CCycle* m_pGlowStyle;

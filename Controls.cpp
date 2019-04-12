@@ -418,10 +418,12 @@ void IControls::RegisterControls()
 		{ "name", "weapon", "health", "armor", "defusing", "defuser", "rank" }, true, M_C(&, m_ESP.m_pEnabled->Value() && m_ESP.m_pOptions->Value()[ESP_OPTION_INFO].m_bSelected));
 	m_ESP.m_pOptionsSub->AddElement(m_ESP.m_pInfoOptions);
 
+	m_ESP.m_pBackTrackStyle = new CCycle(L_DEF_PARAMS, "backtrack_style", { "all", "best" }, M_C(&, m_ESP.m_pEnabled->Value() && (m_ESP.m_pOptions->Value()[ESP_OPTION_SKELETONS].m_bSelected || m_ESP.m_pOptions->Value()[ESP_OPTION_TRAILS].m_bSelected) && m_Aimbot.m_pBackTrack->Value()));
 	m_ESP.m_pGlowStyle = new CCycle(L_DEF_PARAMS, "glow_style", { "regular", "pulse", "outline", "pulse_outline" }, M_C(&, m_ESP.m_pEnabled->Value() && m_ESP.m_pOptions->Value()[ESP_OPTION_GLOW].m_bSelected));
 	m_ESP.m_pGlowBloom = new CCheckbox(S_DEF_PARAMS, "glow_bloom", M_C(&, m_ESP.m_pEnabled->Value() && m_ESP.m_pOptions->Value()[ESP_OPTION_GLOW].m_bSelected));
 	m_ESP.m_pGlowAlpha = new CSlider<percentage_t>(L_DEF_PARAMS, "glow_alpha", { 1.f, "" }, { 0.f, "" }, M_C(&, m_ESP.m_pEnabled->Value() && m_ESP.m_pOptions->Value()[ESP_OPTION_GLOW].m_bSelected));
 	m_ESP.m_pGlowBloomAmount = new CSlider<percentage_t>(L_DEF_PARAMS, "glow_bloom_amount", { 1.f, "" }, { 0.f, "" }, M_C(&, m_ESP.m_pEnabled->Value() && m_ESP.m_pOptions->Value()[ESP_OPTION_GLOW].m_bSelected));
+	m_ESP.m_pMis->AddElement(m_ESP.m_pBackTrackStyle);
 	m_ESP.m_pMis->AddElement(m_ESP.m_pGlowStyle);
 	m_ESP.m_pMis->AddElement(m_ESP.m_pGlowBloom);
 	m_ESP.m_pMis->AddElement(m_ESP.m_pGlowAlpha);
